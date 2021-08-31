@@ -156,13 +156,13 @@ The definition of `pushView` is as follows.
 func pushView<V: View>(tag: String, animated: Bool = true, @ViewBuilder view: () -> V)
 ```
 
-`tag`为NavigationView的注册Tag，`animation`设置是否显示转场动画，`view`为新视图。视图中支持SwiftUI原生的所有定义，例如`toolbar`、`navigationTitle`等。
+`tag` is the registered Tag of NavigationView, `animation` sets whether to show the transition animation, `view` is the new view. The view supports all definitions native to SwiftUI, such as `toolbar`, `navigationTitle`, etc.
 
-目前在启用转场动画时，title和toolbar会在转场动画后才显示，观感稍有不足。日后尝试解决。
+At the moment, when transition animation is enabled, title and toolbar will be shown after the transition animation, so the view is a little bit short. I will try to fix it in the future.
 
-### 使用NotificationCenter跳转到新视图 ###
+### Use NotificationCenter to jump to new view ###
 
-在代码中：
+In the code.
 
 ```swift
 let pushViewItem = NavigationViewManager.PushViewItem(tag: "nv1", animated: false) {
