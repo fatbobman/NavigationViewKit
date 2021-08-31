@@ -1,51 +1,53 @@
 # NavigationViewKit #
 
-NavigationViewKit是一个SwiftUI的NavigationView扩展库。
+[中文版说明](READMECN.md)
 
-更详细的文档和演示，请访问[用NavigationViewKit增强SwiftUI的导航视图](https://www.fatbobman.com/posts/NavigationViewKit/)
+NavigationViewKit is a NavigationView extension library for SwiftUI.
 
-该扩展遵循以下几个原则：
+For more detailed documentation and demo, please visit [用NavigationViewKit增强SwiftUI的导航视图](https://www.fatbobman.com/posts/NavigationViewKit/)
 
-* 非破坏性
+The extension follows several principles.
 
-  任何新添加的功能都不能影响当前SwiftUI提供的原生功能，尤其是不能影响例如`Toolbar`、`NavigationLink`在NavigationView中的表现
+* Non-disruptive
 
-* 尽可能便于使用
+  Any new features added should not affect the native features provided by the current SwiftUI, especially not the `Toolbar`, `NavigationLink` in the NavigationView
 
-  仅需极少的代码便可使用新增功能
+* Be as easy to use as possible
 
-* SwiftUI原生风格
+  Add new features with minimal code
 
-  扩展功能的调用方法尽可能同原生SwiftUI方式类似
+* SwiftUI native style
+
+  Extensions should be called in the same way as the native SwiftUI as much as possible
 
 
+## NavigationViewManager ##
 
-## NavigationViewManager #
+### Introduction ###
 
-### 简介 ###
+One of the biggest complaints from developers about NavigationView is that it does not support a convenient means of returning to the root view. There are two commonly used solutions.
 
-开发者对NavigationView最大抱怨之一就是不支持便捷的返回根视图手段。目前常用的解决方案有两种：
+* Repackage the `UINavigationController`
 
-* 重新包装`UINavigationController`
+  A good wrapper can indeed use the many functions provided by `UINavigationController`, but it is very easy to conflict with the native methods in SwiftUI, so you can't have both.
 
-  好的包装确实可以使用到`UINavigationController`提供的众多功能，不过非常容易同SwiftUI中的原生方法相冲突，鱼和熊掌不可兼得
+* Use procedural `NavigationLink
 
-* 使用程序化的`NavigationLink`
+  Return the programmed `NavigationLink` (usually `isActive`) by undoing the root view. This means will limit the variety of `NavigationLink` options, plus is not conducive to implementation from non-view code.
 
-  通过撤销根视图的程序化的`NavigationLink`（通常是`isActive`）来返回。此种手段将限制`NavigationLink`的种类选择，另外不利于从非视图代码中实现。
+`NavigationViewManager` is the navigation view manager provided in NavigationViewKit, it provides the following functions.
 
-`NavigationViewManager`是NavigationViewKit中提供的导航视图管理器，它提供如下功能：
+* Can manage all the NavigationView in the application
+* Support to return the root view directly from any view under NavigationView by code
+* Jump to a new view via code from any view under NavigationView (no need to describe `NavigationLink` in the view)
+* Return to the root view via `NotificatiionCenter` for any NavigationView in the specified application
+* By `NotificatiionCenter`, let any NavigationView in the application jump to the new view
+* Support transition animation on and off
 
-* 可以管理应用程序中全部的NavigationView
-* 支持从NavigationView下的任意视图通过代码直接返回根视图
-* 在NavigationView下的任意视图中通过代码直接跳转到新视图（无需在视图中描述`NavigationLink`）
-* 通过`NotificatiionCenter`，指定应用程序中的任意NavigationView返回根视图
-* 通过`NotificatiionCenter`，让应用程序中任意的NavigationView跳转到新视图
-* 支持转场动画的开启关闭
+### Register NavigationView ###
 
-### 注册NavigationView ###
+Since `NavigationgViewManager` supports multiple navigation views management, you need to register for each managed navigation view.
 
-由于`NavigationgViewManager`支持多导航视图管理，因此需要为每个受管理的导航视图进行注册。
 
 ```swift 
 import NavigationViewKit
@@ -57,7 +59,7 @@ NavigationView {
         .navigationViewManager(for: "nv1", afterBackDo: {print("back to root") })
 ```
 
-`navigationViewManager`是一个View扩展，定义如下：
+`navigationViewManager` is a View extension, defined as follows.
 
 ```swift
 extension View {
@@ -65,13 +67,13 @@ extension View {
 }
 ```
 
-`for`为当前注册的`NavigationView`的名称（或tag），`afterBackDo`为当转到根视图后执行的代码段。
+`for` is the name (or tag) of the currently registered `NavigationView`, `afterBackDo` is the code segment executed when going to the root view.
 
-应用程序中每个被管理的`NavigationView`的tag需唯一。
+The tag of each managed `NavigationView` in the application needs to be unique.
 
-### 从视图中返回根视图 ###
+### Returning to the root view from a view ###
 
-在注册过的`NavigationView`的任意子视图中，可以通过下面的代码实现返回根视图：
+In any sub-view of a registered `NavigationView`, the return to the root view can be achieved with the following code.
 
 ```swift
 @Environment(\.navigationManager) var nvmanager         
@@ -83,21 +85,21 @@ Button("back to root view") {
 }
 ```
 
-`popToRoot`定义如下：
+`popToRoot` is defined as follows.
 
 ```swift
 func popToRoot(tag: String, animated: Bool = true, action: @escaping () -> Void = {})
 ```
 
-`tag`为当前NavigationView的注册Tag，`animated`设置返回根视图时是否显示转场动画，`action`为进一步的善后代码段。该段代码将执行在注册代码段（`afterBackDo`）之后，主要用于传递当前视图中的数据。
+`tag` is the registered Tag of the current NavigationView, `animated` sets whether to show the transition animation when returning to the root view, and `action` is the further after-back code segment. This code will be executed after the registration code segment (`afterBackDo`) and is mainly used to pass the data in the current view.
 
-可以通过
+This can be done via the
 
 ```swift
 @Environment(\.currentNaviationViewName) var tag
 ```
 
-获取到当前NavigationView的注册Tag，便于视图在不同的NavigtionView中复用
+Get the registered Tag of the current NavigationView, so that the view can be reused in different NavigtionViews.
 
 ```swift
 struct DetailView: View {
@@ -117,23 +119,25 @@ struct DetailView: View {
 }
 ```
 
-### 使用NotificationCenter返回根视图 ###
+### Using NotificationCenter to return to the root view ###
 
-由于NavigationViewManager在我的app中主要的用途是处理`Deep Link`，绝大多数的时间都不是在视图代码中调用的。因此NavigationViewManager提供了基于`NotificationCenter`的类似方法。
+Since the main use of NavigationViewManager in my app is to handle `Deep Link`, the vast majority of the time it is not called in the view code. So NavigationViewManager provides a similar method based on `NotificationCenter`.
 
-在代码中使用:
+In the code using :
 
 ```swift
 let backToRootItem = NavigationViewManager.BackToRootItem(tag: "nv1", animated: false, action: {})
 NotificationCenter.default.post(name: .NavigationViewManagerBackToRoot, object: backToRootItem)
 ```
 
-让指定的NavigationView返回到根视图。
+
+Returns the specified NavigationView to the root view.
 
 
-### 从视图中跳转到新视图 ###
+### Jump from a view to a new view ###
 
-在视图代码中使用:
+Use :
+
 
 ```swift
 @Environment(\.navigationManager) var nvmanager
@@ -146,7 +150,7 @@ Button("go to new View"){
 }
 ```
 
-`pushView`的定义如下：
+The definition of `pushView` is as follows.
 
 ```swift
 func pushView<V: View>(tag: String, animated: Bool = true, @ViewBuilder view: () -> V)
@@ -170,18 +174,24 @@ let pushViewItem = NavigationViewManager.PushViewItem(tag: "nv1", animated: fals
 NotificationCenter.default.post(name:.NavigationViewManagerPushView, object: pushViewItem)
 ```
 
-通过NotificationCenter跳转视图时，视图需转换为`AnyView`。
+`tag` is the registered Tag of NavigationView, `animation` sets whether to show the transition animation, `view` is the new view. The view supports all definitions native to SwiftUI, such as `toolbar`, `navigationTitle`, etc.
+
+At the moment, when transition animation is enabled, title and toolbar will be shown after the transition animation, so the view is a little bit short. I will try to fix it in the future.
+
+### Use NotificationCenter to jump to new view ###
+
+In the code.
 
 
 ## DoubleColoumnJustForPadNavigationViewStyle ##
 
-`DoubleColoumnJustForPadNavigationViewStyle`是`DoubleColoumnNavigationViewStyle`的修改版，其目改善iPhone和iPad使用同一套代码时，`DoubleColoumnNavigationViewStyle`在iPhone Max上横屏时的表现同其他iPhone机型不同。
+`DoubleColoumnJustForPadNavigationViewStyle` is a modified version of `DoubleColoumnNavigationViewStyle`, its purpose is to improve the performance of `DoubleColoumnNavigationViewStyle` in landscape on iPhone Max when iPhone and iPad use the same set of code, and different from other iPhone models.
 
-当iPhone Max横屏时，NavigationView的表现会同iPad一样双列显示，让应用程序在不同iPhone上的表现不一致。
+When iPhone Max is in landscape, the NavigationView will behave like iPad with double columns, which makes the application behave inconsistently on different iPhones.
 
-使用`DoubleColoumnJustForPadNavigationViewStyle`时，iPhone Max在横屏时仍呈现`StackNavigationViewStyle`的式样。
+When using `DoubleColoumnJustForPadNavigationViewStyle`, iPhone Max will still show `StackNavigationViewStyle` in landscape.
 
-使用方法：
+Usage.
 
 ```swift
 NavigationView{
@@ -190,7 +200,7 @@ NavigationView{
 .navigationViewStyle(DoubleColoumnJustForPadNavigationViewStyle())
 ```
 
-在swift 5.5下可以直接使用
+It can be used directly under swift 5.5
 
 ```swift
 .navigationViewStyle(.columnsForPad)
@@ -198,9 +208,10 @@ NavigationView{
 
 ## TipOnceDoubleColumnNavigationViewStyle ##
 
-当前`DoubleColumnNavigationViewStyle`在iPad上横竖屏的表现不同。当竖屏时，左侧栏默认会隐藏，容易让新用户无所适从。
+The current `DoubleColumnNavigationViewStyle` behaves differently on iPad in both horizontal and vertical screens. When the screen is vertical, the left column is hidden by default, making it easy for new users to get confused.
 
-`TipOnceDoubleColumnNavigationViewStyle`会在iPad首次进入竖屏状态时，将左侧栏显示在右侧栏上方，提醒使用者。该提醒只会进行一次。提醒后旋转了方向，再次进入竖屏状态则不会二次触发提醒。
+`TipOnceDoubleColumnNavigationViewStyle` will show the left column above the right column to remind the user when the iPad is in vertical screen for the first time. This reminder will only happen once. If you rotate the orientation after the reminder, the reminder will not be triggered again when you enter the vertical screen again.
+
 
 ```swift
 NavigationView{
@@ -209,7 +220,7 @@ NavigationView{
 .navigationViewStyle(TipOnceDoubleColumnNavigationViewStyle())
 ```
 
-在Swift 5.5下可以直接使用
+It can be used directly under swift 5.5
 
 ```swift
 .navigationViewStyle(.tipColumns)
@@ -218,11 +229,11 @@ NavigationView{
 
 ## FixDoubleColumnNavigationViewStyle ##
 
-在[健康笔记](https://www.fatbobman.com/healthnotes/)中，我希望iPad版本无论在横屏或竖屏时，都始终能够保持两栏显示的状态，且左侧栏不可隐藏。
+In [Health Notes](https://www.fatbobman.com/healthnotes/), I want the iPad version to always keep two columns displayed no matter in landscape or portrait, and the left column cannot be hidden.
 
-我之前使用了HStack套两个NavigationView来达到这个效果
+I previously used HStack set of two NavigationView to achieve this effect
 
-现在，可以直接NavigationViewKit中的`FixDoubleColumnNavigationViewStyle`轻松实现上述效果。
+Now, the above effect can be easily achieved by `FixDoubleColumnNavigationViewStyle` in NavigationViewKit directly.
 
 ```swift
 NavigationView{
@@ -231,7 +242,7 @@ NavigationView{
 .navigationViewStyle(FixDoubleColumnNavigationViewStyle(widthForLandscape: 350, widthForPortrait:250))
 ```
 
-并且可以为横屏竖屏两种状态分别设置左侧栏宽度。
+And you can set the left column width separately for both landscape and portrait states.
 
-更详细的文档和演示，请访问[用NavigationViewKit增强SwiftUI的导航视图](https://www.fatbobman.com/posts/NavigationViewKit/)
+For more detailed documentation and demo, please visit [My Blog](https://www.fatbobman.com/)
 
