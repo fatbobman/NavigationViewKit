@@ -167,6 +167,17 @@ public extension EnvironmentValues {
     }
 }
 
+public struct CurrentNavigationViewName: EnvironmentKey {
+    public static var defaultValue: String?
+}
+
+public extension EnvironmentValues {
+    var currentNaviationViewName: String? {
+        get { self[CurrentNavigationViewName.self] }
+        set { self[CurrentNavigationViewName.self] = newValue }
+    }
+}
+
 // -MARK: NavigationViewManager
 public struct AllowPopToRoot: ViewModifier {
     let tag: String
@@ -182,6 +193,7 @@ public struct AllowPopToRoot: ViewModifier {
             .introspectNavigationController { nv in
                 nvManager.wrappedValue.addController(controller: nv, tag: tag, cleanAction: cleanAction)
             }
+            .environment(\.currentNaviationViewName, tag)
     }
 }
 
