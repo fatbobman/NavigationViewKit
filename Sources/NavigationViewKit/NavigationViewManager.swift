@@ -15,7 +15,7 @@ import SwiftUI
 ///     NavigationView{
 ///         ...
 ///     }
-///     .allowPopToRoot(tag: "nv1", cleanAction: { print("back to root") })
+///     .navigationViewManager(for: "nv1", afterBackDo: {print("back to root") })
 ///
 /// //在任意视图中使用
 ///     @Environment(\.navigationManager) var nvmanager
@@ -198,7 +198,7 @@ public struct AllowPopToRoot: ViewModifier {
 }
 
 public extension View {
-    func allowPopToRoot(tag: String, cleanAction: @escaping () -> Void = {}) -> some View {
+    func navigationViewManager(for tag: String,afterBackDo cleanAction: @escaping () -> Void = {}) -> some View {
         modifier(AllowPopToRoot(tag: tag, cleanAction: cleanAction))
     }
 }
