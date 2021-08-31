@@ -10,7 +10,7 @@ The extension follows several principles.
 
 * Non-disruptive
 
-  Any new features added should not affect the native features provided by the current SwiftUI, especially not the `Toolbar`, `NavigationLink` in the NavigationView
+Any new feature does not affect the native functionality provided by Swiftui, especially if it does not affect the performance of Toolbar, NavigationLink in NavigationView
 
 * Be as easy to use as possible
 
