@@ -1,6 +1,6 @@
 //
 //  DoubleColoumnJustForPadNavigationViewStyle.swift
-//  
+//
 //
 //  Created by Yang Xu on 2021/8/31.
 //
@@ -13,14 +13,14 @@ public struct DeviceKey: EnvironmentKey {
 }
 
 public extension EnvironmentValues {
-    var device: UIUserInterfaceIdiom {
-        get { self[DeviceKey.self] }
-    }
+    var device: UIUserInterfaceIdiom { self[DeviceKey.self] }
 }
 
 /// 屏蔽掉iPhoneMax在横屏状态下的双列显示。只在iPad上支持双列显示
 public struct DoubleColoumnJustForPadNavigationViewStyle: NavigationViewStyle {
     @Environment(\.device) var device
+    public init() {}
+
     public func _body(configuration: _NavigationViewStyleConfiguration) -> some View {
         if device == .pad {
             NavigationView {
@@ -40,27 +40,25 @@ public struct DoubleColoumnJustForPadNavigationViewStyle: NavigationViewStyle {
     }
 }
 
-extension NavigationViewStyle where Self == DoubleColoumnJustForPadNavigationViewStyle {
+public extension NavigationViewStyle where Self == DoubleColoumnJustForPadNavigationViewStyle {
     static var columnsForPad: DoubleColoumnJustForPadNavigationViewStyle { DoubleColoumnJustForPadNavigationViewStyle() }
 }
 
-
-public extension View{
-    func doubleColoumnJustForPadNavigationView() -> some View{
+public extension View {
+    func doubleColoumnJustForPadNavigationView() -> some View {
         modifier(DoubleColoumnJustForPadNavigationViewModifier())
     }
 }
 
-public struct DoubleColoumnJustForPadNavigationViewModifier:ViewModifier{
+struct DoubleColoumnJustForPadNavigationViewModifier: ViewModifier {
     @Environment(\.device) var device
     public func body(content: Content) -> some View {
         if device == .pad {
-               content
-            .navigationViewStyle(DoubleColumnNavigationViewStyle())
+            content
+                .navigationViewStyle(DoubleColumnNavigationViewStyle())
         } else {
-               content
-            .navigationViewStyle(StackNavigationViewStyle())
+            content
+                .navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }
-

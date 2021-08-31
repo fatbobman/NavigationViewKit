@@ -22,7 +22,7 @@ public struct FixDoubleColumnNavigationViewStyle: NavigationViewStyle {
     let widthForLandscape: CGFloat
     let widthForPortrait: CGFloat
     @StateObject var orientation = DeviceOrientation()
-    init(widthForLandscape: CGFloat = 350, widthForPortrait: CGFloat = 350) {
+    public init(widthForLandscape: CGFloat = 350, widthForPortrait: CGFloat = 350) {
         self.widthForLandscape = widthForLandscape
         self.widthForPortrait = widthForPortrait
     }

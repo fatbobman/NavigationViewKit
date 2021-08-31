@@ -118,6 +118,12 @@ public class NavigationViewManager {
     ///               } )
     /// ```
     public struct PushViewItem {
+        public init(tag: String, animated: Bool, view: @escaping () -> AnyView) {
+            self.tag = tag
+            self.animated = animated
+            self.view = view
+        }
+
         let tag: String
         let animated: Bool
         @ViewBuilder var view: () -> AnyView
@@ -133,6 +139,12 @@ public class NavigationViewManager {
     ///           }))
     /// ```
     public struct BackToRootItem {
+        public init(tag: String, animated: Bool, action: @escaping () -> Void) {
+            self.tag = tag
+            self.animated = animated
+            self.action = action
+        }
+
         let tag: String
         let animated: Bool
         var action: () -> Void
