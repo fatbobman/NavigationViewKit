@@ -33,8 +33,8 @@ import SwiftUI
 ///                       }
 /// ```
 public class NavigationViewManager {
-    private var contorllers: [String: ControllerItem] = [:]
-    private var cancllables: Set<AnyCancellable> = []
+    var contorllers: [String: ControllerItem] = [:]
+    var cancllables: Set<AnyCancellable> = []
 
     public init() {
         NotificationCenter.default.publisher(for: .NavigationViewManagerBackToRoot, object: nil)
