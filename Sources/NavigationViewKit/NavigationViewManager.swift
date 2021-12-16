@@ -118,7 +118,7 @@ public class NavigationViewManager {
     ///               } )
     /// ```
     public struct PushViewItem {
-        public init(tag: String, animated: Bool, view: @escaping () -> AnyView) {
+        public init(tag: String, animated: Bool, @ViewBuilder view: @escaping () -> AnyView) {
             self.tag = tag
             self.animated = animated
             self.view = view
@@ -126,7 +126,7 @@ public class NavigationViewManager {
 
         let tag: String
         let animated: Bool
-        @ViewBuilder var view: () -> AnyView
+        var view: () -> AnyView
     }
 
     /// 使用Notification来返回根视图，将所需信息包装成BackToRootItem
